@@ -1,1 +1,7 @@
--e . 
+python-box                  == 7.2.0
+python-dotenv               == 1.0.1
+PyYAML                      == 6.0.1
+ensure                      == 1.0.4
+python-box                  == 7.2.0
+Flask                       == 3.0.3
+-e .
