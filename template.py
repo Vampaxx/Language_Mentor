@@ -12,6 +12,8 @@ list_of_files = [
     ".github/workflows/.gitkeep",
     f"src/{project_name}/__init__.py",
     f"src/{project_name}/components/__init__.py",
+    f"src/{project_name}/components/Model.py",
+    f"src/{project_name}/components/Prompt_and_chain.py",
     f"src/{project_name}/components/data_processing.py",
     
     f"src/{project_name}/utils/__init__.py",
@@ -21,9 +23,13 @@ list_of_files = [
     f"src/{project_name}/constants/__init__.py",
     f"src/{project_name}/pipeline/__init__.py",
 
+    f"src/{project_name}/entity/__init__.py",
+    f"src/{project_name}/entity/config_entity.py",
+
 
     "config/config.yaml",
     
+    ".env",
     "params.yaml",
     "requirements.txt",
     "setup.py",
