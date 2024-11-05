@@ -26,7 +26,6 @@ def read_yaml(path_to_yaml: Path) -> ConfigBox:
         raise e
     
 
-
 @ensure_annotations
 def create_directories(path_to_directories: list, verbose=True):
     for path in path_to_directories:
@@ -34,7 +33,10 @@ def create_directories(path_to_directories: list, verbose=True):
         if verbose:
             logger.info(f"created directory at: {path}")
 
-
+    
+def json_to_sentence(json_data):
+    json_data = json.dumps(json_data, indent=4, sort_keys=True)
+    return json_data
 
 if __name__ == "__main__":
     pass 

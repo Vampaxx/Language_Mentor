@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Mentor - Results</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Results</h2>
+        <ul>
+            {% for question, response in question_and_response.items() %}
+                <li><strong>Q:</strong> {{ question }} <br> <strong>A:</strong> {{ response }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

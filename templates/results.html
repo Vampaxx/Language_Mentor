@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proficiency Level</title>
+    <!--<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">-->
+    <style>
+        body {
+            background-color: white;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 80%;
+            display: flex;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .left-section {
+            width: 30%;
+            padding: 20px;
+            background-color: #e6f7ff;
+            border-right: 2px solid #d9d9d9;
+        }
+
+        .right-section {
+            width: 70%;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: black;
+        }
+
+        h2 {
+            color: black;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: rgb(57, 138, 106);
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: darkgreen;
+        }
+
+        #chapter-summary, #subtopic-content {
+            margin-top: 20px;
+        }
+
+        #chapter-summary h3, #subtopic-content h3 {
+            color: black;
+        }
+
+        #chapter-summary p, #subtopic-content p {
+            color: #555;
+        }
+
+        #subtopics-list, #examples-list {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Proficiency Level: {{ proficiency_level }}</h1>
+
+    <div class="container">
+        <div class="left-section">
+            <h2>Chapters</h2>
+            <ul>
+                {% for chapter_key, chapter_data in language_curriculum.content.items() %}
+                    <li>
+                        <a href="#" onclick="showSummary(event, '{{ chapter_key }}', `{{ chapter_data.summary | escape }}`)">{{ chapter_data.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="right-section">
+            <div id="chapter-summary">
+                <h3>Chapter Summary</h3>
+                <p id="summary-content">Select a chapter to see its summary.</p>
+                <ul id="subtopics-list"></ul>
+            </div>
+
+            <div id="subtopic-content">
+                <h3>Subtopic Content</h3>
+                <p id="content-display">Select a subtopic to see its content.</p>
+                <ul id="examples-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    
+</body>
+</html>

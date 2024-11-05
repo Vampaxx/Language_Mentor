@@ -1,5 +1,6 @@
 from Language_Mentor import logger
-from langchain_openai import ChatOpenAI
+#from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from Language_Mentor.entity.config_entity import ModelConfig
 
 
@@ -10,7 +11,7 @@ class ModelSetup:
 
     def model_setup(self):
         logger.info("Model setup initialized")
-        llm     = ChatOpenAI(model        = self.config.Model_name,
+        llm     = ChatGroq(model        = self.config.Model_name,
                              temperature  = self.config.temperature,
                              api_key      = self.config.api_key,)
         

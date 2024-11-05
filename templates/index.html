@@ -1,0 +1,184 @@
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Mentor Chatbot</title>
+    <style>
+        .container { max-width: 500px; margin: auto; padding: 20px; }
+        .question, .response, .submit-btn { display: none; }
+        .question { font-weight: bold; margin-bottom: 10px; }
+        .response input { width: 100%; padding: 10px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button id="start-btn">Initialize Questions</button>
+    <div id="chat-box">
+        <div id="question-container">
+            <p class="question" id="question"></p>
+        </div>
+        <div class="response">
+            <input type="text" id="user-response" placeholder="Type your answer here">
+            <button id="next-btn">Next</button>
+        </div>
+        <button id="submit-btn" class="submit-btn">Submit</button>
+    </div>
+</div>
+
+<script>
+    const startBtn = document.getElementById("start-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const submitBtn = document.getElementById("submit-btn");
+    const questionElement = document.getElementById("question");
+    const userResponseInput = document.getElementById("user-response");
+
+    let questionIndex = -1;
+
+    // Start the chatbot and load the first question
+    startBtn.addEventListener("click", () => {
+        startBtn.style.display = "none";
+        loadNextQuestion();
+    });
+
+    // Handle "Next" button click to send response and load next question
+    nextBtn.addEventListener("click", () => {
+        const userResponse = userResponseInput.value;
+        if (!userResponse) return alert("Please provide an answer.");
+
+        fetch("/next_question", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question_index: questionIndex, user_response: userResponse })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.next_question) {
+                questionElement.textContent = data.next_question;
+                userResponseInput.value = "";
+                questionIndex = data.question_index;
+            } else if (data.message) {
+                questionElement.textContent = data.message;
+                document.querySelector(".response").style.display = "none";
+                submitBtn.style.display = "inline";
+            }
+        });
+    });
+
+    // Load the next question
+    function loadNextQuestion() {
+        questionIndex = 0;
+        fetch("/next_question", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question_index: questionIndex, user_response: "" })
+        })
+        .then(response => response.json())
+        .then(data => {
+            questionElement.textContent = data.next_question;
+            document.querySelector(".response").style.display = "block";
+            questionElement.style.display = "block";
+        });
+    }
+</script>
+
+</body>
+</html>
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Mentor - Question</title>
+    <style>
+        body {
+            background-color: white;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 300px;
+            padding: 20px;
+            background-color: #e6f7ff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            color: black;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        label {
+            font-size: 14px;
+            color: black;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgb(57, 138, 106);
+            border-radius: 10px;
+            font-size: 14px;
+            color: black;
+            margin-bottom: 15px;
+            background-color: white;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: darkgreen;
+            outline: none;
+        }
+
+        button {
+            background-color: rgb(32, 184, 133);
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            font-size: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: rgb(20, 120, 87);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Question {{ question_index }}</h2>
+        <p>{{ question }}</p>
+        
+        <form method="POST" action="{{ url_for('question_flow') }}">
+            <label for="user_response">Your Answer:</label>
+            <input type="text" id="user_response" name="user_response" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
+

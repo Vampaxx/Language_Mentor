@@ -1,0 +1,115 @@
+Analyze the user’s {language} proficiency level by creating 5 questions that effectively assess user's knowledge and understanding at various levels (beginner, intermediate, advanced).
+            Provide questions that analyze grammar, vocabulary, comprehension.
+
+            Follow these guidelines:
+            - Generate the questions in json format. example {{"question":[question1,question2......]}}.
+            - Each question should progressively explore the user's familiarity with grammar, vocabulary, comprehension, and language usage.
+            - The questions should be clear and specific to {language} to accurately gauge the user’s level, ranging from beginner to advanced.
+            - Do not add any commentary or introductory text. only the questions in list format should be generated.
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+@app.route("/next_question", methods=["POST"])
+def next_question():
+    
+    data            = request.get_json()
+    question_index  = data.get("question_index", 0)
+    user_response   = data.get("user_response", "")
+
+
+    print(f"Question {question_index + 1} user response: {user_response}")
+
+    if question_index < len(questions) - 1:
+        return jsonify({
+            "next_question"     : questions[question_index + 1],
+            "question_index"    : question_index + 1
+        })
+    else:
+        return jsonify({
+            "next_question" : None,
+            "message"       : "All questions completed! Click submit."
+        })
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________
+You are a linguistics expert. Your task is to design a comprehensive language curriculum tailored to the user’s {language_level},which can be beginner, intermediate, or advanced.
+        This curriculum should cover essential skills such as reading, writing, and comprehension, with a focus on relevant vocabulary, grammar, and sentence structure for each level.
+        Additionally, include clear learning objectives, suggested exercises, and practical applications to reinforce the concepts taught.
+        The goal is for the user to achieve fluency and confidence in the language by following this curriculum step-by-step.
+
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+You are a linguistics expert. Your task is to design a comprehensive language curriculum tailored to the user’s {language_level} (beginner, intermediate, or advanced). This curriculum should cover all essential language skills, including reading, writing,and comprehension, with a specific focus on relevant vocabulary, grammar, and sentence structure for the specified level.
+        The curriculum must contain 20 carefully selected topics that thoroughly cover the language's foundational and advanced elements based on {language_level} level. Additionally, each topic should include:
+
+            - Clear learning objectives to define what the user will achieve by completing each section.
+            - Suggested exercises to reinforce understanding and practical applications.
+            - Real-world applications to support fluency and confidence in practical language use.
+
+        The curriculum should guide the user step-by-step, ensuring they achieve both fluency and confidence in the language by the end.
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+You are a linguistics expert. Your task is to design a comprehensive {language} curriculum tailored to the user’s {language_level}.
+        This curriculum should cover all essential {language} skills, including reading, writing, and comprehension, with a specific focus on foundational grammar, sentence structure, and beginner-level sentence formation.
+        The curriculum must contain 5 carefully selected chapters that thoroughly cover the foundational elements of {language_level} {language}. Additionally, each topic should include:
+            - Clear learning objectives to define what the user will achieve by completing each section.
+            - Suggested exercises to reinforce understanding of {language_level} grammar and sentence-making.
+            - Real-world applications to support fluency and build confidence in using basic {language} in practical contexts.
+        The curriculum should guide the user step-by-step, ensuring they gain {language_level} proficiency in {language} grammar, sentence construction, and essential vocabulary by the end of the course.
+        
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________
+You are a linguistics expert in {language}. Your task is to design an {language} language curriculum tailored to the user’s {language_level} proficiency.
+    The curriculum should be structured in 3 chapters with each chapter containing 5 examples for clear understanding and practice. The content for each level should be as follows:
+    Only create chapter of {language_level} level.
+    The curriculum structure based on {language_level} is as follows:
+    
+    Beginner Level:
+        Chapter 1: Teach basic numbers (e.g., one, two, three, etc.) and the alphabet.
+        Chapter 2: Introduce common words and their spellings.
+        Chapter 3: Teach basic phrases to help the user form simple sentences.
+
+    Intermediate Level:
+        Chapter 1: Cover essential parts of speech, including nouns, verbs, and pronouns.
+        Chapter 2: Teach adjectives, adverbs, conjunctions, interjections, and prepositions.
+        Chapter 3: Introduce different sentence structures to improve sentence formation skills.
+
+    Advanced Level:
+        Chapter 1: Teach phrasal verbs and their meanings.
+        Chapter 2: Explore word formation techniques.
+        Chapter 3: Teach how to use formal and informal language in various contexts.
+
+Each chapter should include practical examples to reinforce understanding and help the user progress confidently through the curriculum.
+
+Your output should be in JSON format, structured using the following classes:
+
+```python
+class Chapter(BaseModel):
+    chapter_title: str = Field(description="Title of the chapter")
+    topics: List[str] = Field(description="List of topics covered in this chapter")
+    activities: List[str] = Field(description="List of activities for practice in this chapter")
+
+class Curriculum(BaseModel):
+    chapter1: Chapter = Field(description="Content for Chapter 1")
+    chapter2: Chapter = Field(description="Content for Chapter 2")
+    chapter3: Chapter = Field(description="Content for Chapter 3")
+
+class CurriculumFilter(BaseModel):
+    chapter_curriculum: List[Union[Chapter, Curriculum]] = Field(description="List of chapters or curricula")
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+class Chapter(BaseModel):
+    chapter_title   : str       = Field(description="Title of the chapter")
+    topics          : List[str] = Field(description="List of topics covered in this chapter")
+    activities      : List[str] = Field(description="List of activities for practice in this chapter")
+
+class Curriculum(BaseModel):
+    chapter1: Chapter = Field(description="Content for Chapter 1")
+    chapter2: Chapter = Field(description="Content for Chapter 2")
+    chapter3: Chapter = Field(description="Content for Chapter 3")
+
+class CurriculumFilter(BaseModel):
+    chapter_curriculum: List[Union[Chapter, Curriculum]] = Field(description="List of chapters or curricula")
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+As an expert in crafting examination questions, please create a set of 10 questions designed to evaluate the user's understanding of the provided {curriculum}.
+            For each question, include the correct answer.
+            Structure the output in JSON format, where each key represents a question, and its value contains the corresponding answer.
+            Ensure that the questions cover a range of topics within the {curriculum} to provide a comprehensive assessment.
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________

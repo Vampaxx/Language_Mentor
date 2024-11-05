@@ -23,7 +23,7 @@ class ConfigurationManager:
         load_dotenv()
         model_config = ModelConfig(Model_name   = params.MODEL_NAME,
                                    temperature  = params.TEMPERATURE,
-                                   api_key      = os.getenv("OPENAI_API_KEY"))
-
+                                   #api_key      = os.getenv("OPENAI_API_KEY"))
+                                    api_key      = os.getenv("GROQ_API_KEY"))
         return model_config
     

@@ -23,7 +23,7 @@ examination_chain           = prompt_and_chain.exam_prompt()
 ## -------------------------       ----------------------------## 
 
 
-
+index 
 
 
 @app.before_request
@@ -96,12 +96,13 @@ def curriculum():
     language_curriculum         = language_curriculum_chain.invoke({"language_level"    : proficiency_level,
                                                                     "language"          : selected_language})
     
-    print(language_curriculum)
     session.pop('question_index', None)
     session.pop('question_and_response', None)
     session.pop("questions", None)
+    print(proficiency_level,selected_language)
 
-    return render_template("results.html", question_and_response=question_and_response)
+    return render_template("curriculum.html",proficiency_level=proficiency_level, language_curriculum=language_curriculum)
+    
 
 
 if __name__ == "__main__":
