@@ -95,6 +95,23 @@
             margin-left     : 20px;
             color           : grey;
         }
+        .completed-button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: gold;
+            color: black;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .completed-button:hover {
+            background-color: #b8860b; /* Dark golden color */
+        }
 
     </style>
 </head>
@@ -103,12 +120,17 @@
     <div class="header">
         <span id="proficiency-level">Welcome to {{ proficiency_level }} level</span>
     </div>
+
     <div class="container">
         <div class="left-section">
             <div id="chapters"></div>
         </div>
+
         <div class="right-section">
             <div id="content-area">Select a subtopic to view content here.</div>
+            <form action="/exam_page" method="get">
+                <button type="submit" class="completed-button">Level Up</button>
+            </form>
         </div>
     </div>
 
@@ -121,10 +143,10 @@
 
         function loadChapters() {
             language_curriculum.chapters.forEach((chapter, chapterIndex) => {
-                const chapterDiv = document.createElement("div");
-                chapterDiv.innerHTML = `
-                    <div class="chapter-title">${chapter.title}</div>
-                    <div class="chapter-summary">${chapter.summary}</div>
+                const chapterDiv        = document.createElement("div");
+                chapterDiv.innerHTML    = `
+                    <div class="chapter-title">     ${chapter.title}    </div>
+                    <div class="chapter-summary">   ${chapter.summary}  </div>
                 `;
                 chapter.subtopics.forEach((subtopic, subtopicIndex) => {
                     const subtopicDiv       = document.createElement("div");
@@ -138,8 +160,8 @@
         }
 
         function displayContent(chapterIndex, subtopicIndex) {
-            const subtopic = language_curriculum.chapters[chapterIndex].subtopics[subtopicIndex];
-            contentArea.innerHTML = `
+            const subtopic          = language_curriculum.chapters[chapterIndex].subtopics[subtopicIndex];
+            contentArea.innerHTML   = `
                 <h2>${subtopic.title}</h2>
                 <p>${subtopic.summary}</p>
                 ${subtopic.examples.map(example => `

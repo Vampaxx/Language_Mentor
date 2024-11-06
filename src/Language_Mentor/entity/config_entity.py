@@ -39,5 +39,8 @@ class Chapter(BaseModel):
 class ExamQuestionAndAnswer(BaseModel):
     questions   : List[str]         = Field(default_factory=list,
                                             description="A list of 10 questions to assess the language proficiency of the user.")
-    answers     : Dict[str, str]    = Field(default_factory=dict,
-                                            description="A dictionary of questions as keys and their respective answers as values.")
+    #answers     : Dict[str, str]    = Field(default_factory=dict,
+     #                                       description="A dictionary of questions as keys and their respective answers as values.")
+
+class AnswerEvaluation(BaseModel):
+    score: str = Field(description="Total marks obtained based on correct answers")

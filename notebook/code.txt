@@ -112,3 +112,21 @@ _______________________________________
 <!--
 
 -->    
+@app.route("/exam_page",methods= ["GET","POST"])
+def exam_page():
+    
+    logger.info("Examination initialized...")
+    if not session['questions']:
+        if request.method == "POST":
+            language_curriculum = session.get("language_curriculum")
+            exam_questions      = examination_chain.invoke(json_to_sentence(language_curriculum)) 
+            if exam_questions:
+                session['questions']                = exam_questions['questions']
+                session['question_index']           = 0
+                session['question_and_response']    = {}
+                return redirect(url_for("exam_page"))
+            else:
+                return "Language curriculum is required to process.",400
+        else:
+            return render_template 
+        

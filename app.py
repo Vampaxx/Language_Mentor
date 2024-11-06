@@ -1,7 +1,9 @@
 from Language_Mentor import logger
 from Language_Mentor.components.Model import ModelSetup
+from Language_Mentor.utils.common import json_to_sentence
 from Language_Mentor.config.configuration import ConfigurationManager
 from Language_Mentor.components.Prompt_and_chain import PromptAndChain
+
 
 
 
@@ -15,26 +17,29 @@ manager         = ConfigurationManager()
 model_config    = manager.get_model_config()
 llm             = ModelSetup(config=model_config).model_setup()
 prompt_and_chain= PromptAndChain(model_config=model_config)
+language_level  = ['Beginner', 'Intermediate','Advanced']
 ##---------------------------Chain-----------------------------## 
 question_chain              = prompt_and_chain.question_prompt()
 level_chain                 = prompt_and_chain.proficiency_level_prompt()
 language_curriculum_chain   = prompt_and_chain.language_curriculum_prompt()
 examination_chain           = prompt_and_chain.exam_prompt() 
-## -------------------------       ----------------------------## 
+## -------------------------Evaluation----------------------------## 
+evaluation_chain            = prompt_and_chain.evaluation_prompt()
 
-
-index 
 
 
 @app.before_request
 def before_request():
     """Initialize session variables before each request."""
     if 'question_index' not in session:
-        session['question_index'] = 0
+        session['question_index']       = 0
     if 'question_and_response' not in session:
         session['question_and_response'] = {}
     if 'questions' not in session:
-        session['questions'] = []
+        session['questions']    = []
+    if "language_curriculum" not in session:
+        session["language_curriculum"] = []
+
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -61,10 +66,8 @@ def question_flow():
     question_index          = session.get('question_index', 0)
     question_and_response   = session.get('question_and_response', {})
     
-
     if question_index >= len(questions):
         return redirect(url_for("curriculum"))
-
 
     if request.method == "POST":
         user_response                                       = request.form.get("user_response")
@@ -76,13 +79,15 @@ def question_flow():
 
         if question_index >= len(questions):
             return redirect(url_for("curriculum"))
-
     current_question    = questions[question_index]
     logger.info(f"Displaying question {question_index + 1}")
     return render_template("index.html", question=current_question, question_index=question_index + 1)
 
+
+
 @app.route("/curriculum")
 def curriculum():
+    logger.info("Language curriculum initialized...")
     question_and_response   = session.get('question_and_response', {})
     selected_language       = session.get('selected_language', 'Unknown Language')
     
@@ -95,14 +100,79 @@ def curriculum():
     proficiency_level           = level_chain.invoke(question_response)
     language_curriculum         = language_curriculum_chain.invoke({"language_level"    : proficiency_level,
                                                                     "language"          : selected_language})
-    
-    session.pop('question_index', None)
-    session.pop('question_and_response', None)
-    session.pop("questions", None)
-    print(proficiency_level,selected_language)
+    print(proficiency_level) 
+    session["language_curriculum"]  = language_curriculum
 
+    session.pop('question_index', None)
+    logger.info("question_index removed from session.")
+    session.pop('question_and_response', None)
+    logger.info("question_and_response removed from session.")
+    session.pop("questions", None)
+    logger.info("questions removed from session.")
+
+    print(proficiency_level,selected_language)
+    logger.info("Completed.")
     return render_template("curriculum.html",proficiency_level=proficiency_level, language_curriculum=language_curriculum)
+
+
+
+
+@app.route("/exam_page", methods=["GET", "POST"])
+def exam_page():
+    if request.method == "GET":
+        logger.info("Examination initialized...")
+        
+        selected_language                   = session.get('selected_language', 'Unknown Language')
+        language_curriculum                 = session.get("language_curriculum")
+        exam_questions                      = examination_chain.invoke({"curriculum": json_to_sentence(language_curriculum),
+                                                                        "language"  : selected_language})
+        #print("stage 0 ") 
+        #print(exam_questions)
+        if exam_questions:
+            session["questions"]                = exam_questions.get("question", [])
+            session["question_index"]           = 0
+            session["question_and_response"]    = {}
+            return render_template("exam_question.html")
+        else:
+            return "Language Curriculum is required to process",400
     
+
+    questions               = session.get("questions", [])
+    question_index          = session.get("question_index", 0)
+    question_and_response   = session.get("question_and_response", {})
+
+    if question_index >= len(questions):
+        #print("stage_1")
+        print("All questions answered.")
+        print(question_and_response)
+        mark = evaluation_chain.invoke(json_to_sentence(question_and_response))
+        print(mark)
+        return redirect(url_for("question_flow"))
+    
+
+    if request.method == "POST":
+        user_response                                       = request.form.get("user_response")
+        question_and_response[questions[question_index]]    = user_response
+        session["question_and_response"]                    = question_and_response
+        #print("stage_2")
+        #print(question_and_response)
+
+        question_index             += 1
+        session["question_index"]   = question_index
+
+        if question_index >= len(questions):
+            print("All questions and answers:")
+            print(question_and_response)
+            mark = evaluation_chain.invoke(json_to_sentence(question_and_response))
+            print(mark)
+            return redirect(url_for("question_flow"))
+    #print(question_and_response)
+
+    current_question = questions[question_index]
+    return render_template("exam_question.html", question=current_question, question_index=question_index + 1)
+
+
+
 
 
 if __name__ == "__main__":

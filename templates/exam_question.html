@@ -81,7 +81,7 @@
         <h2>Question {{ question_index }}</h2>
         <p>{{ question }}</p>
         
-        <form method="POST" action="{{ url_for('question_flow') }}">
+        <form method="POST" action="{{ url_for('exam_page') }}">
             <label for="user_response">Your Answer:</label>
             <input type="text" id="user_response" name="user_response" required>
             <button type="submit">Submit</button>

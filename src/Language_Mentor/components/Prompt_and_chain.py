@@ -7,12 +7,13 @@ from Language_Mentor.utils.common import *
 from Language_Mentor.components.Model import ModelSetup
 from Language_Mentor.config.configuration import ConfigurationManager
 from Language_Mentor.entity.config_entity import (ModelConfig,
-                                                   Chapter,QuestionsModel,ExamQuestionAndAnswer)#,Curriculum,CurriculumFilter)
+                                                   Chapter,QuestionsModel,ExamQuestionAndAnswer,AnswerEvaluation)#,Curriculum,CurriculumFilter)
 
 from langchain_core.runnables import RunnablePassthrough,RunnableLambda
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.output_parsers.json import JsonOutputParser
+from langchain.output_parsers import PydanticOutputParser
 
 
 
@@ -32,7 +33,7 @@ class PromptAndChain(ModelSetup):
             Create 5 questions to know the {language} proficiency of user. The created questions should be in {language}.
             Each question should evaluate the user’s understanding of grammar, sentence structure, and vocabulary.
             The questions should help to determine whether the user’s proficiency level is beginner, intermediate, or advanced.
-            Only create this 5 questions only.
+            Only create this 5 questions only.And strictily follows the JSON Format. 
 
             Your output should be in JSON format, structured using the following classes:
             ```python 
@@ -49,7 +50,7 @@ class PromptAndChain(ModelSetup):
             }
             | question_template 
             | self.llm
-            | JsonOutputParser(pydantic_function=QuestionsModel)
+            | JsonOutputParser(pydantic_object=QuestionsModel)
         )
         logger.info("question prompt is completed.")
         return chain 
@@ -141,24 +142,64 @@ class PromptAndChain(ModelSetup):
     def exam_prompt(self):
         logger.info(f"Examination Prompting and chain has started....")
         profiency_level_prompt = """
-        As an expert in crafting examination questions, please create a set of 10 questions to assess the user's understanding of the provided curriculum.
+        As an expert in crafting examination questions, create a set of 10 meaningful questions to assess the user's understanding of the provided {curriculum} of {language} Language. 
         Structure each question following the format specified below. Ensure that the questions cover a range of topics within the curriculum to provide a thorough assessment.
         The output should be in JSON format, structured as a dictionary with a single key "question", and the value should be a list containing 10 questions. Example format:
-        {"question": ["question1","question2",..."question10"]}
+        {{"question": ["question1","question2",..."question10"]}}
         """
         question_template = PromptTemplate(template       = profiency_level_prompt,
-                                           input_variable = ["curriculum"],)
+                                           input_variable = ["curriculum","language"],)
         
         self.proficiency_chain = (
             {
-                "curriculum"  : RunnablePassthrough(),
+                "curriculum"    : RunnablePassthrough(),
+                "language"      : RunnablePassthrough()
             }
             | question_template 
             | self.llm
-            | JsonOutputParser()
+            | JsonOutputParser(pydantic_object=ExamQuestionAndAnswer)
         )
         logger.info("Examination Prompting and chain completed.")
         return self.proficiency_chain                
+    
+    
+    def evaluation_prompt(self):
+        logger.info(f"Evaluation Prompting and chain has started....")
+        evaluation_prompt = """
+        As an expert evaluator, your task is to assess a question and its respective response provided in the following format.
+
+        Each key-value pair represents a question (key) and the student's response (value). For example, "What is the English word for the number 5?": "five", where "What is the English word for the number 5?" is the question (key), and "five" is the student's answer (value).
+
+        Task Details:
+
+            Analyze each question and its corresponding student response carefully.
+
+            Assign a score of 1 for each correct answer and a score of 0 for each incorrect answer.
+
+            Sum up the correct answers and return the total score as a JSON object in the following format:
+            {{"score":total_score}}
+            
+        The Question and Answer is : 
+        {question_and_answer}
+    """
+        
+        parser              = JsonOutputParser(pydantic_object=AnswerEvaluation)
+        evaluation_template = PromptTemplate(template           = evaluation_prompt,
+                                           input_variable       = ["question_and_answer"],
+                                           partial_variables    = {"format_instructions": parser.get_format_instructions()})
+        
+        
+        self.proficiency_chain = (
+            {
+                "question_and_answer"  : RunnablePassthrough(),
+            }
+            | evaluation_template 
+            | self.llm
+            | parser
+        )
+        logger.info("Evaluation Prompting and chain completed.")
+        return self.proficiency_chain                
+
 
 
 
@@ -170,16 +211,26 @@ if __name__ == "__main__":
     level_chain                 = prompt_and_chain.proficiency_level_prompt()
     language_curriculum_chain   = prompt_and_chain.language_curriculum_prompt()
     examination_chain           = prompt_and_chain.exam_prompt() 
+    evaluation_chain            = prompt_and_chain.evaluation_prompt()
+
+
+
+    question_res = {
+                    'Write the next number in the sequence: One, Two, Three...': 'four',
+                    'What is the English word for the number 5?': 'five', 
+                    "What is the first letter of the word 'Apple'?": 'P', 
+                    }
     
     #print(chain.invoke("english"))
     proficiency_level   = level_chain.invoke("question : Choose the correct sentence structure: 'If I __________ (to study) harder, I would have passed the exam.' a) study b) studied c) had studied d) would study and user_response : c. question : Identify the correct form of the possessive adjective in the following sentence: '______ car is red.' a) My b) Mine c) I d) Me and user_response : a. question : What does the phrase 'break a leg' mean in informal English? a) To injure oneself. b) To wish someone good luck. c) To take a risk. d) To be very tired. and user_response : b. question : What is the meaning of the word 'fastidious' in the following sentence: 'She is a fastidious editor.'? a) Careless. b) Meticulous. c) Quick. d) Lazy. and user_response : b. question : Which of the following sentences is in the passive voice? a) The dog bites the man. b) The man was bitten by the dog. c) The dog is biting the man. d) The man bites the dog. and user_response : b")
-    language_curriculum = language_curriculum_chain.invoke({"language_level"    :proficiency_level,
-                                                 "language"          : "english"})
+    """language_curriculum = language_curriculum_chain.invoke({"language_level"    : proficiency_level,
+                                                            "language"          : "english"})"""
     print(proficiency_level)
-    print((json_to_sentence(language_curriculum)))
-    #print(json_to_sentence(language_curriculum))
-    #exam_ques_and_ans   = examination_chain.invoke(language_curriculum) 
-    #print(exam_ques_and_ans)
+    #print((json_to_sentence(language_curriculum)))
+    mark = evaluation_chain.invoke(json_to_sentence(question_res))
+    print(mark)
+    #exam_ques_and_ans   = examination_chain.invoke(json_to_sentence(language_curriculum)) 
+    #print(len(exam_ques_and_ans['question']))
     #print(language_curriculum.get("chapters"))
     #print(language_curriculum)
     

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Page</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .exam-container {
+            text-align: center;
+            background-color: rgb(41, 38, 38);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            color: gold;
+        }
+    </style>
+</head>
+<body>
+    <div class="exam-container">
+        <h1>Exam</h1>
+        <p>Prepare yourself for the exam on the content you learned. Good luck!</p>
+        <form action="/exam_page" method="get">
+            <button type="submit" class="completed-button">Level Up</button>
+        </form>
+    </div>
+</body>
+</html>
