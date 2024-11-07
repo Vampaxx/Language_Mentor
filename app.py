@@ -130,6 +130,7 @@ def exam_page():
         #print(exam_questions)
         if exam_questions:
             session["questions"]                = exam_questions.get("question", [])
+            print(session['questions'])
             session["question_index"]           = 0
             session["question_and_response"]    = {}
             return render_template("exam_question.html")
@@ -149,7 +150,8 @@ def exam_page():
         print(mark)
         return redirect(url_for("question_flow"))
     
-
+    current_question = questions[question_index]
+    print(current_question,question_index)
     if request.method == "POST":
         user_response                                       = request.form.get("user_response")
         question_and_response[questions[question_index]]    = user_response
@@ -169,6 +171,7 @@ def exam_page():
     #print(question_and_response)
 
     current_question = questions[question_index]
+    #print(current_question,question_index)
     return render_template("exam_question.html", question=current_question, question_index=question_index + 1)
 
 

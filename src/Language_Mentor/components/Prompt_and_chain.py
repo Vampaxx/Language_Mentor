@@ -142,11 +142,13 @@ class PromptAndChain(ModelSetup):
     def exam_prompt(self):
         logger.info(f"Examination Prompting and chain has started....")
         profiency_level_prompt = """
-        As an expert in crafting examination questions, create a set of 10 meaningful questions to assess the user's understanding of the provided {curriculum} of {language} Language. 
+        As an expert in crafting examination questions, create a set of 5 meaningful simple questions to assess the user's understanding of the provided {curriculum} of {language} Language. 
         Structure each question following the format specified below. Ensure that the questions cover a range of topics within the curriculum to provide a thorough assessment.
-        The output should be in JSON format, structured as a dictionary with a single key "question", and the value should be a list containing 10 questions. Example format:
-        {{"question": ["question1","question2",..."question10"]}}
+        The output should be in JSON format, structured as a dictionary with a single key "question", and the value should be a list containing 5 questions. Example format:
+        {{"question": ["question1","question2"....,"Question5"]}}
         """
+        #
+        #{{"question": ["question1","question2",..."question10"]}}
         question_template = PromptTemplate(template       = profiency_level_prompt,
                                            input_variable = ["curriculum","language"],)
         

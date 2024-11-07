@@ -34,13 +34,11 @@ def before_request():
     if 'question_index' not in session:
         session['question_index']       = 0
     if 'question_and_response' not in session:
-        session['question_and_response']= {}
+        session['question_and_response'] = {}
     if 'questions' not in session:
-        session['questions']            = []
+        session['questions']    = []
     if "language_curriculum" not in session:
-        session["language_curriculum"]  = []
-    if "current_level" not in session:
-        session["current_level"]        = None  #"Beginner"
+        session["language_curriculum"] = []
 
 
 
@@ -100,18 +98,17 @@ def curriculum():
     question_response           = ". ".join([f"question: {key} and user_response: {value}" for key, value in question_and_response.items()])
     ## chain## 
     proficiency_level           = level_chain.invoke(question_response)
-    session['current_level']    = proficiency_level 
     language_curriculum         = language_curriculum_chain.invoke({"language_level"    : proficiency_level,
                                                                     "language"          : selected_language})
     print(proficiency_level) 
     session["language_curriculum"]  = language_curriculum
 
-    #session.pop('question_index', None)
-    #logger.info("question_index removed from session.")
-    #session.pop('question_and_response', None)
-    #logger.info("question_and_response removed from session.")
-    #session.pop("questions", None)
-    #logger.info("questions removed from session.")
+    session.pop('question_index', None)
+    logger.info("question_index removed from session.")
+    session.pop('question_and_response', None)
+    logger.info("question_and_response removed from session.")
+    session.pop("questions", None)
+    logger.info("questions removed from session.")
 
     print(proficiency_level,selected_language)
     logger.info("Completed.")
@@ -150,27 +147,13 @@ def exam_page():
     question_and_response   = session.get("question_and_response", {})
 
     if question_index >= len(questions):
-        logger.info("All questions answered.")
-        mark                        = evaluation_chain.invoke(json_to_sentence(question_and_response))
-        total_score                 = len(questions)
-        score_percentage            = (mark.get('score', 0) / total_score) * 100
-        logger.info(score_percentage)
-        current_level               = session.get('current_level')
+        print("All questions answered.")
+        
 
-        if score_percentage >60:
-            if current_level       == "Advanced":
-                return redirect(url_for("congratulations"))
-            else:
-                logger.info(f"promote to next level and upadte curriculum")
-                next_level_index            = language_level.index(current_level) + 1
-                session['current_level']    = language_level[next_level_index]
-                updated_curriculum          = language_curriculum_chain.invoke({"language_level"    : language_level[next_level_index],
-                                                                                "language"          : selected_language})
-                session["language_curriculum"]  = updated_curriculum
-                return redirect(url_for("curriculum"))             
-        else:
-            return redirect(url_for("question_flow"))  
-        #return redirect(url_for("question_flow"))
+        #print(question_and_response)
+        mark                = evaluation_chain.invoke(json_to_sentence(question_and_response))
+        print(mark)
+        return redirect(url_for("question_flow"))
        
     if request.method == "POST":
         user_response                                       = request.form.get("user_response")
@@ -179,41 +162,19 @@ def exam_page():
 
         question_index             += 1
         session["question_index"]   = question_index
-        logger.info(f"index = {question_index}")
 
         if question_index >= len(questions):
-            logger.info("All questions and answers:")
-            #print(question_and_response)
+            print("All questions and answers:")
+            print(question_and_response)
             mark                    = evaluation_chain.invoke(json_to_sentence(question_and_response))
-            total_score             = len(questions)
-            score_percentage        = (mark.get('score', 0) / total_score) * 100
-            if current_level       == "Advanced":
-                return redirect(url_for("congratulations"))
-            else:
-                # promote to next level and upadte curriculum
-                next_level_index            = language_level.index(current_level) + 1
-                session['current_level']    = language_level[next_level_index]
-                updated_curriculum          = language_curriculum_chain.invoke({"language_level"    : language_level[next_level_index],
-                                                                                "language"          : selected_language})
-                session["language_curriculum"]  = updated_curriculum
-                return redirect(url_for("curriculum"))             
-        else:
-            logger.info(f"question flow {question_index}")
-            return redirect(url_for("question_flow"))  
-
-            #print(mark)
-            #return redirect(url_for("question_flow"))
+            print(mark)
+            return redirect(url_for("question_flow"))
     
     current_question = questions[question_index]
     print(current_question,question_index)
     return render_template("exam_question.html", question=current_question, question_index=question_index + 1)
 
 
-
-@app.route("/congratulations")
-def congratulations():
-    """Final page after achieving certificate level."""
-    return render_template("congratulations.html", message="You achieved your Certificate")
 
 
 

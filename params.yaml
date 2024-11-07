@@ -1,6 +1,6 @@
-TEMPERATURE     : 1       
+TEMPERATURE   : 1       
 #MODEL_NAME   : gpt-3.5-turbo
 #MODEL_NAME   : llama3-70b-8192
-#MODEL_NAME    : llama3-8b-8192
+#MODEL_NAME   : llama3-8b-8192
 #MODEL_NAME   : mixtral-8x7b-32768           
-MODEL_NAME : llama3-groq-70b-8192-tool-use-preview
+MODEL_NAME    : llama3-groq-70b-8192-tool-use-preview

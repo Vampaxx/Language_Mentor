@@ -157,7 +157,7 @@ def exam_page():
         logger.info(score_percentage)
         current_level               = session.get('current_level')
 
-        if score_percentage >60:
+        if score_percentage >10:
             if current_level       == "Advanced":
                 return redirect(url_for("congratulations"))
             else:
@@ -184,6 +184,7 @@ def exam_page():
         if question_index >= len(questions):
             logger.info("All questions and answers:")
             #print(question_and_response)
+            mark                    = evaluation_chain.invoke(json_to_sentence(question_and_response))
             mark                    = evaluation_chain.invoke(json_to_sentence(question_and_response))
             total_score             = len(questions)
             score_percentage        = (mark.get('score', 0) / total_score) * 100
