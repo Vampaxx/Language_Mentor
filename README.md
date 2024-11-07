@@ -1,6 +1,6 @@
 # Language Curriculum Chatbot
 
-The Language Curriculum Chatbot is a Flask-based web application designed to guide users through language learning. This chatbot dynamically adjusts the language curriculum based on user responses and scores, moving users through proficiency levels—Beginner, Intermediate, and Advanced—and provides a certificate upon successful completion.
+The Language Curriculum LLM model is a Flask-based web application designed to guide users through language learning. This chatbot dynamically adjusts the language curriculum based on user responses and scores, moving users through proficiency levels—Beginner, Intermediate, and Advanced—and provides a certificate upon successful completion.
 
 ## Features
 
@@ -40,7 +40,13 @@ python main.py
 ```
 ## DEMO WORKING 
 
-Access the Web Interface
+
+
+https://github.com/user-attachments/assets/58a7171e-50b0-4155-b091-2c87d0104cd3
+
+
+
+### Access the Web Interface
 
 Open your browser and go to http://127.0.0.1:5000/ to start using the chatbot.
 Usage
@@ -52,20 +58,12 @@ Step-by-Step Guide
   4. Take Exams: At the end of each level, take an exam. A passing score allows progression to the next level.
   5. Receive a Certificate: After passing the Advanced level exam, you will receive a congratulatory certificate.
 
-Project Structure
+## Project Structure
 
-  - main.py: Main Flask application file with routes, session management, and chatbot logic.
-  - Language_Mentor/: Directory containing configurations, logging, and chatbot models.
+  - main.py: Main Flask application file with routes, session management, and LLM logic.
+  - Language_Mentor/: Directory containing configurations, logging, and LLM models.
   - templates/: Contains HTML templates for different pages (language selection, question flow, curriculum, exam, and certificate page).
 
-Project Summary
+## Project Summary
 
-The Language Curriculum Chatbot application streamlines the process of language learning by using interactive questions and adaptive progression. It allows users to select a language, answer questions to determine proficiency, and then work through a curriculum tailored to their level. This guided learning path is capped by exams that must be passed to advance to the next level, ultimately leading to a certificate of completion.
-
-### Approach to Development
-
-  - Application Setup: Organized the project with separate components for model configurations, data handling, and user interface.
-  - User Progress Tracking: Designed session-based tracking to monitor user responses and advancement through levels.
-  - Dynamic Curriculum Adjustment: Integrated logic for assessing answers and dynamically updating the curriculum.
-  - Flask Web Interface: Built a clear and user-friendly interface for ease of navigation and user engagement.
-  - Testing and Validation: Validated the chatbot with sample questions to ensure it correctly classifies levels and generates curriculum.
+The Language Curriculum LLM application streamlines the process of language learning by using interactive questions and adaptive progression. It allows users to select a language, answer questions to determine proficiency, and then work through a curriculum tailored to their level. This guided learning path is capped by exams that must be passed to advance to the next level, ultimately leading to a certificate of completion.
